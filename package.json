@@ -1,0 +1,49 @@
+{
+  "name": "use-async-resource",
+  "version": "1.0.0",
+  "description": "A custom React hook for simple data fetching with React Suspense",
+  "keywords": [
+    "react",
+    "reactjs",
+    "async",
+    "data",
+    "fetch",
+    "cache",
+    "suspense",
+    "hooks",
+    "custom-hook",
+    "react-hook",
+    "react-hooks",
+    "react-cache",
+    "react-suspense",
+    "data-fetching"
+  ],
+  "main": "./lib/index.js",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "rm -rf ./lib && tsc",
+    "test": "jest --verbose --coverage"
+  },
+  "author": {
+    "name": "Andrei Duca",
+    "email": "duca.andrei@gmail.com"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "object-hash": "^2.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "@babel/preset-typescript": "^7.9.0",
+    "@testing-library/react-hooks": "^3.2.1",
+    "@types/jest": "^25.2.1",
+    "@types/react": "^16.8.0",
+    "@types/react-dom": "^16.8.0",
+    "babel-jest": "^25.3.0",
+    "jest": "^25.3.0",
+    "react": "^16.13.1",
+    "react-test-renderer": "^16.13.1",
+    "typescript": "^3.8.3"
+  }
+}

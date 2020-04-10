@@ -1,0 +1,10 @@
+export declare type ApiFn<R, A extends any[] = []> = (...args: A) => Promise<R>;
+export declare type UpdaterFn<A extends any[] = []> = (...args: A) => void;
+declare type DataFn<R> = () => R;
+declare type LazyDataFn<R> = () => R | undefined;
+export declare type ModifierFn<R, M = any> = (response: R) => M;
+declare type ModifiedDataFn<R> = <M>(modifier: ModifierFn<R, M>) => M;
+declare type LazyModifiedDataFn<R> = <M>(modifier: ModifierFn<R, M>) => M | undefined;
+export declare type DataOrModifiedFn<R> = DataFn<R> & ModifiedDataFn<R>;
+export declare type LazyDataOrModifiedFn<R> = LazyDataFn<R> & LazyModifiedDataFn<R>;
+export {};
