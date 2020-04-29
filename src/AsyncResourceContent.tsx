@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import AsyncResourceErrorBoundary, { Props as ErrorBoundaryProps } from './AsyncResourceErrorBoundary';
 
 interface AsyncResourceContentProps {
-  fallback: React.ReactComponentElement<any> | string;
+  fallback: NonNullable<ReactNode> | null;
   errorComponent?: React.ComponentType<any>;
 }
 
