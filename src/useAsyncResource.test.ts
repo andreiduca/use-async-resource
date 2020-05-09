@@ -127,4 +127,25 @@ describe('useAsyncResource', () => {
     // but that it returns the same data
     expect(newDataReader(u => u.id)).toStrictEqual(1);
   });
+
+  it('should trigger new api calls if the params of the hook change', async () => {
+    // get the data reader and the updater function, injecting a prop that we'll update later
+    const { result, rerender } = renderHook(
+      ({ paramId }) => useAsyncResource(apiFn, paramId),
+      { initialProps: { paramId: 1 }},
+    );
+
+    // check that it suspends and it resolves with the expected data
+    let [dataReader] = result.current;
+    await suspendFor(dataReader);
+    expect(dataReader()).toStrictEqual({ id: 1, name: 'test name' });
+
+    // re-render with new props
+    rerender({ paramId: 2 });
+
+    // check that it suspends again and renders with new data
+    const [newDataReader] = result.current;
+    await suspendFor(newDataReader);
+    expect(newDataReader()).toStrictEqual({ id: 2, name: 'test name' });
+  });
 });

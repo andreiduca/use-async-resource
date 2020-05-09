@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   ApiFn,
@@ -59,6 +59,8 @@ export function useAsyncResource<ResponseType, ArgTypes extends any[]>(
   apiFunction: ApiFn<ResponseType> | ApiFn<ResponseType, ArgTypes>,
   ...parameters: ArgTypes
 ) {
+  const firstRender = useRef(true);
+
   // initialize the data reader
   const [dataReader, updateDataReader] = useState(() => {
     // lazy initialization, when no parameters are passed
@@ -98,6 +100,15 @@ export function useAsyncResource<ResponseType, ArgTypes extends any[]>(
     },
     [apiFunction],
   );
+
+  // automatically call the updater function every time the params of the hook change
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+    } else {
+      updater(...parameters);
+    }
+  }, [...parameters]);
 
   return [dataReader, updater];
 }
