@@ -1,6 +1,6 @@
 {
   "name": "use-async-resource",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A custom React hook for simple data fetching with React Suspense",
   "keywords": [
     "react",
@@ -18,17 +18,22 @@
     "react-suspense",
     "data-fetching"
   ],
+  "author": {
+    "name": "Andrei Duca",
+    "email": "duca.andrei@gmail.com"
+  },
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andreiduca/use-async-resource.git"
+  },
+  "bugs": "https://github.com/andreiduca/use-async-resource/issues",
   "main": "./lib/index.js",
   "types": "./src/index.ts",
   "scripts": {
     "build": "rm -rf ./lib && tsc",
     "test": "jest --verbose --coverage"
   },
-  "author": {
-    "name": "Andrei Duca",
-    "email": "duca.andrei@gmail.com"
-  },
-  "license": "ISC",
   "dependencies": {
     "object-hash": "^2.0.3"
   },
