@@ -32,8 +32,8 @@ export function initializeDataReader<ResponseType, ArgTypes extends any[] = []>(
 ) {
   type AsyncStatus = 'init' | 'done' | 'error';
 
-  const cache = resourceCache(apiFn, ...parameters);
-  const cachedResource = cache.get();
+  const apiFnCache = resourceCache(apiFn);
+  const cachedResource = apiFnCache.get(...parameters);
 
   if (cachedResource) {
     return cachedResource;
@@ -68,7 +68,7 @@ export function initializeDataReader<ResponseType, ArgTypes extends any[] = []>(
       : (data as ResponseType);
   }
 
-  cache.set(dataReaderFn);
+  apiFnCache.set(dataReaderFn, ...parameters);
 
   return dataReaderFn;
 }

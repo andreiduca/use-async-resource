@@ -214,14 +214,14 @@ const refreshLatestPosts = React.useCallback(() => {
 ```
 
 In this case, we're clearing the entire cache for the `fetchLatestPosts` api function.
-But you can also pass parameters to the helper function, so you only delete the cache for those specific ones:
+But you can also use the `delete()` method with parameters, so you only delete the cache for those specific ones:
 
 ```tsx
 const [user, getUser] = useAsyncResource(fetchUser, id);
 
 const refreshUserProfile = React.useCallback((userId) => {
   // only clear the cache for that id
-  resourceCache(fetchUser, userId).delete();
+  resourceCache(fetchUser).delete(userId);
   // get new user data
   getUser(userId);
 }, []);

@@ -113,7 +113,7 @@ describe('useAsyncResource', () => {
     await suspendFor(dataReader);
 
     // clear the cache before calling the updater with the previous param
-    resourceCache(apiFn, 1).delete();
+    resourceCache(apiFn).delete(1);
 
     // call the updater function with same params
     act(() => updateDataReader(1));

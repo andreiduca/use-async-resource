@@ -6,46 +6,46 @@ describe('resourceCache', () => {
 
   it('should not get a cached resource', async () => {
     expect(resourceCache(apiFn).get()).toBe(undefined);
-    expect(resourceCache(apiFn, 1).get()).toBe(undefined);
+    expect(resourceCache(apiFn).get(1)).toBe(undefined);
   });
 
   it('should cache a new resource', async () => {
     function getData() { return true; }
-    resourceCache(apiFn, 1).set(getData as DataOrModifiedFn<boolean>);
+    resourceCache(apiFn).set(getData as DataOrModifiedFn<boolean>, 1);
 
-    expect(resourceCache(apiFn, 1).get()).toBe(getData);
+    expect(resourceCache(apiFn).get(1)).toBe(getData);
   });
 
   it('should delete a cached resource', async () => {
     function getData() { return true; }
-    resourceCache(apiFn, 1).set(getData as DataOrModifiedFn<boolean>);
+    resourceCache(apiFn).set(getData as DataOrModifiedFn<boolean>, 1);
 
-    resourceCache(apiFn, 1).delete();
-    expect(resourceCache(apiFn, 1).get()).toBe(undefined);
+    resourceCache(apiFn).delete(1);
+    expect(resourceCache(apiFn).get(1)).toBe(undefined);
   });
 
   it('should clear all cached resources', async () => {
     function getData1() { return true; }
     function getData2() { return true; }
-    resourceCache(apiFn, 1).set(getData1 as DataOrModifiedFn<boolean>);
-    resourceCache(apiFn, 2).set(getData2 as DataOrModifiedFn<boolean>);
+    resourceCache(apiFn).set(getData1 as DataOrModifiedFn<boolean>, 1);
+    resourceCache(apiFn).set(getData2 as DataOrModifiedFn<boolean>, 2);
 
-    expect(resourceCache(apiFn, 1).get()).toBe(getData1);
-    expect(resourceCache(apiFn, 2).get()).toBe(getData2);
+    expect(resourceCache(apiFn).get(1)).toBe(getData1);
+    expect(resourceCache(apiFn).get(2)).toBe(getData2);
 
     resourceCache(apiFn).clear();
 
-    expect(resourceCache(apiFn, 1).get()).toBe(undefined);
-    expect(resourceCache(apiFn, 2).get()).toBe(undefined);
+    expect(resourceCache(apiFn).get(1)).toBe(undefined);
+    expect(resourceCache(apiFn).get(2)).toBe(undefined);
   });
 
   it('should not collide with other api functions', async () => {
     const apiFn2 = (_: number) => Promise.resolve(true);
     function getData() { return true; }
 
-    resourceCache(apiFn, 1).set(getData as DataOrModifiedFn<boolean>);
+    resourceCache(apiFn).set(getData as DataOrModifiedFn<boolean>, 1);
 
-    expect(resourceCache(apiFn, 1).get()).toBe(getData);
-    expect(resourceCache(apiFn2, 1).get()).toBe(undefined);
+    expect(resourceCache(apiFn).get(1)).toBe(getData);
+    expect(resourceCache(apiFn2).get(1)).toBe(undefined);
   });
 });

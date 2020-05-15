@@ -1,6 +1,6 @@
 {
   "name": "use-async-resource",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "description": "A custom React hook for simple data fetching with React Suspense",
   "keywords": [
     "react",

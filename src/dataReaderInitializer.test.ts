@@ -90,7 +90,7 @@ describe('initializeDataReader', () => {
     await suspendFor(dataReader);
 
     // clear the cache for this resource
-    resourceCache(apiFn, 1).delete();
+    resourceCache(apiFn).delete(1);
 
     // initialize a new data reader with the same params
     const similarDataReader = initializeDataReader(apiFn, 1);
