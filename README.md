@@ -238,9 +238,71 @@ const userDisplayName = userDataReader(user => `${user.firstName} ${user.lastNam
 ```
 
 
+## File resource helpers
+
+Suspense is not just about fetching data in a declarative way, but about fetching resources in general, including images and scripts.
+
+The included `fileResource` helper will turn a URL string into a resource "data reader" function, but it will load a resource instead of data.
+When the resource finishes loading, the "data reader" function will return the URL you passed in. Until then, it will throw a Promise, so Suspense can render a fallback. 
+
+Here's an example for an image resource:
+
+```tsx
+import { useAsyncResource, fileResource } from 'use-async-resource';
+
+function Author({ user }) {
+  // initialize the image "data reader"
+  const [userImageReader] = useAsyncResource(fileResource.image, user.profilePicUrl);
+    
+  return (
+    <article>
+      {/* render a fallback until the image is downloaded */}
+      <React.Suspense fallback={<SomeImgPlaceholder />}>
+        {/* pass the resource "data reader" to a suspendable component */}
+        <ProfilePhoto resource={userImageReader} />
+      </React.Suspense>
+      <h1>{user.name}</h1>
+      <h2>{user.bio}</h2>
+    </article>
+  );
+}
+
+function ProfilePhoto(props) {
+  // just read back the URL and use it in an `img` tag when the image is ready
+  const imageSrc = props.resource();
+
+  return <img src={imageSrc} />;
+}
+```
+
+Using the `fileResource` to load external scripts is just as easy:
+
+```tsx
+function App() {
+  const [jq] = useAsyncResource(fileResource.script, 'https://code.jquery.com/jquery-3.4.1.slim.min.js');
+
+  return (
+    <React.Suspense fallback="jQuery loading...">
+      <JQComponent jQueryResource={jq} />
+    </React.Suspense>
+  );
+}
+
+function JQComponent(props) {
+  const jQ = props.jQueryResource();
+
+  // jQuery should be available and you can do something with it
+  return <div>jQuery version: {window.jQuery.fn.jquery}</div>
+}
+```
+
+Notice we don’t do anything with the `const jQ`, but we still need to call `props.jQueryResource()` so it can throw,
+rendering the fallback until the library is fully loaded on the page.
+
+
 ## 📘 TypeScript support
 
-The `useAsyncResource` hook infers all the types from the api function.
+The `useAsyncResource` hook infers all types from the api function passed in.
 The arguments it accepts after the api function are exactly the parameters of the original api function.
 
 ```tsx
@@ -314,7 +376,7 @@ import { useAsyncResource, AsyncResourceContent } from 'use-async-resource';
   fallback="loading your data..."
   errorMessage="Some generic message when bad things happen"
 >
-  <SomeComponent consuming={dataReader} />
+  <SomeComponent consuming={aDataReader} />
 </AsyncResourceContent>
 ```
 
@@ -328,7 +390,7 @@ or a function that takes the thrown error as an argument and returns a `string` 
   fallback={<Spinner />}
   errorMessage={(e: CustomErrorType) => <span style={{ color: 'red' }}>{e.message}</span>}
 >
-  <SomeComponent consuming={dataReader} />
+  <SomeComponent consuming={aDataReader} />
 </AsyncResourceContent>
 ```
 
@@ -347,8 +409,8 @@ class MyCustomErrorBoundary extends React.Component { ... }
   errorComponent={MyCustomErrorBoundary}
   errorMessage={/* optional error message */}
 >
-  <SomeComponent consuming={dataReader} />
+  <SomeComponent consuming={aDataReader} />
 </AsyncResourceContent>
 ```
 
-If you also pass the `errorMessage` prop, your custom error boundary will receive it.
+If you also pass the `errorMessage` prop, your custom error boundary will receive it as a prop.
