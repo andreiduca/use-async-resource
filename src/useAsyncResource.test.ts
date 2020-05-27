@@ -148,4 +148,42 @@ describe('useAsyncResource', () => {
     await suspendFor(newDataReader);
     expect(newDataReader()).toStrictEqual({ id: 2, name: 'test name' });
   });
+
+  it('should persist the data reader between renders - for api function with params', async () => {
+    // get the data reader and the updater function
+    const { result, rerender } = renderHook(
+      ({ paramId }) => useAsyncResource(apiFn, paramId),
+      { initialProps: { paramId: 1 }},
+    );
+
+    // check that it suspends and it resolves with the expected data
+    let [dataReader] = result.current;
+    await suspendFor(dataReader);
+    expect(dataReader()).toStrictEqual({ id: 1, name: 'test name' });
+
+    // re-render with same props
+    rerender({ paramId: 1 });
+
+    // check that it doesn't suspend again and the data reader is reused
+    const [newDataReader] = result.current;
+    expect(newDataReader).toStrictEqual(dataReader);
+  });
+
+  it('should persist the data reader between renders - for api function without params', async () => {
+    // get the data reader and the updater function
+    const { result, rerender } = renderHook(() => useAsyncResource(apiSimpleFn, []));
+
+    // check that it suspends and it resolves with the expected data
+    let [dataReader] = result.current;
+    await suspendFor(dataReader);
+    expect(dataReader()).toStrictEqual({ message: 'success' });
+
+    // render again
+    rerender();
+
+    // check that it doesn't suspend again and the data reader is reused
+    const [newDataReader] = result.current;
+    expect(newDataReader()).toStrictEqual(dataReader());
+    // expect(newDataReader).toStrictEqual(dataReader);
+  });
 });

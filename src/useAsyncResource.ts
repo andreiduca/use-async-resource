@@ -105,7 +105,7 @@ export function useAsyncResource<ResponseType, ArgTypes extends any[]>(
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
-    } else {
+    } else if (apiFunction.length > 0) {
       updater(...parameters);
     }
   }, [...parameters]);
