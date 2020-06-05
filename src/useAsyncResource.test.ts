@@ -1,7 +1,9 @@
 import { act, renderHook } from '@testing-library/react-hooks';
+import { waitFor } from '@testing-library/dom';
 
 import { useAsyncResource } from './useAsyncResource';
 import { resourceCache } from './cache';
+import { initializeDataReader as preloadResource } from './dataReaderInitializer';
 import { suspendFor } from './test.helpers';
 
 describe('useAsyncResource', () => {
@@ -185,5 +187,21 @@ describe('useAsyncResource', () => {
     const [newDataReader] = result.current;
     expect(newDataReader()).toStrictEqual(dataReader());
     // expect(newDataReader).toStrictEqual(dataReader);
+  });
+
+  it('should preload a resource before rendering', async () => {
+    // start preloading the resource
+    preloadResource(apiSimpleFn);
+
+    // expect the resource to load faster than the component that will consume it
+    const preloadedResource = resourceCache(apiSimpleFn).get();
+    if (preloadedResource) {
+      await waitFor(() => preloadedResource());
+    }
+
+    // a component consuming the preloaded resource should have the data readily available
+    const { result } = renderHook(() => useAsyncResource(apiSimpleFn, []));
+    let [dataReader] = result.current;
+    expect(dataReader()).toStrictEqual({ message: 'success' });
   });
 });

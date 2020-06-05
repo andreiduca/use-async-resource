@@ -144,7 +144,34 @@ function UserDetails({ userReader }) {
 All resources are cached, so subsequent calls with the same parameters for the same api function
 return the same resource, and don't trigger new, identical api calls.
 
-This means you can write code like this, without having to think about deduplicating requests for the same user id:
+This is useful for many reasons. First, it means you don't have to necessarily initialize the data reader
+in a parent component. You only have to wrap the child component in a Suspense boundary:
+
+```tsx
+function App() {
+  return (
+    <React.Suspense fallback="loading posts">
+      <Posts />
+    </React.Suspense>
+  );
+}
+
+function Posts(props) {
+  // as usual, initialize the data reader and start fetching the posts
+  const [postsReader] = useAsyncResource(fetchPosts, []);
+
+  // now read the posts and render a list
+  const postsList = postsReader();
+
+  return postsList.map(post => <Post post={post} />);
+}
+```
+
+This still works as you'd expect, even if the `App` component re-renders for any other reason,
+before, during or even after the posts have loaded. Because the data reader gets cached, only the first initialization will trigger an api call.
+
+
+This also means you can write code like this, without having to think about deduplicating requests for the same user id:
 
 ```tsx
 function App() {
@@ -192,6 +219,77 @@ function Author(props) {
 }
 ```
 
+
+### Preloading resources
+
+When you know a resource will be consumed by a child component, you can preload it ahead of time.
+This is useful in cases such as lazy loaded components, or when trying to predict a user's intent.
+
+```tsx
+// 👉 import the `preloadResource` helper
+import { useAsyncResource, preloadResource } from 'use-async-resource';
+
+// a lazy-loaded React component
+const PostsList = React.lazy(() => import('./PostsListComponent'));
+
+// some api function
+const fetchUserPosts = (userId) => fetch(`/path/to/get/user/${userId}/posts`).then(res => res.json())
+
+
+function UserProfile(props) {
+  const [showPostsList, toggleList] = React.useState(false);
+
+  return (
+    <>
+      <h1>{props.user.name}</h1>
+      <button
+        // show the list on button click
+        onClick={() => toggleList(true)}
+        // 👉 we can preload the resource as soon as the user
+        // shows any intent of interacting with the button 
+        onMouseOver={() => preloadResource(fetchUserPosts, props.user.id)}
+      >
+        show user posts
+      </button>
+
+      {showPostsList && (
+        // this child will suspend if either:
+        // - the `PostList` component code is not yet loaded
+        // - or the data reader inside it is not yet ready
+        // 👉 notice we're not initializing any resource to pass it to the child component
+        <React.Suspense fallback="...loading posts">
+          <PostsList userId={props.user.id} />
+        </React.Suspense>  
+      )}
+    </>
+  );
+}
+
+// in PostsListComponent.tsx
+function PostsList(props) {
+  // 👉 instead, we initialize the data reader inside the child component directly
+  const [posts] = useAsyncResource(fetchUserPosts, props.userId);
+
+  // ✨ because we preloaded it in the parent with the same `userId` parameter,
+  // it will get initialized with that cached version
+
+  // also, the outer React.Suspense boundary in the parent will take care of rendering the fallback
+  return (
+    <ul>
+      {posts().map(post => <li><Post post={post} /></li>)}
+    </ul>
+  );
+}
+```
+
+In the above example, even if the child component loads faster than the data,
+re-rendering it multiple times until the data is ready is ok, because every time
+the data reader will be initialized from the same cached version.
+No api call will ever be triggered from the child component,
+because that happened in the parent when the user hovered the button.
+
+At the same time, if the data is ready before the code loads, it will be available immediately
+when the child component will render for the first time. 
 
 ### Clearing caches
 
