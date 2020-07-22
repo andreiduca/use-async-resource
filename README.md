@@ -220,7 +220,7 @@ function Author(props) {
 ```
 
 
-### Preloading resources
+### 🚚 Preloading resources
 
 When you know a resource will be consumed by a child component, you can preload it ahead of time.
 This is useful in cases such as lazy loaded components, or when trying to predict a user's intent.
@@ -291,10 +291,10 @@ because that happened in the parent when the user hovered the button.
 At the same time, if the data is ready before the code loads, it will be available immediately
 when the child component will render for the first time. 
 
+
 ### Clearing caches
 
-In some instances however, you really need to re-fetch a resource (after updating a piece of data for example),
-so you'll need to clear the cached results. You can manually clear caches by using the `resourceCache` helper.
+Finally, you can manually clear caches by using the `resourceCache` helper.
 
 ```tsx
 import { useAsyncResource, resourceCache } from 'use-async-resource';

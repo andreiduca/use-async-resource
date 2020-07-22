@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import {
   ApiFn,
@@ -59,56 +59,42 @@ export function useAsyncResource<ResponseType, ArgTypes extends any[]>(
   apiFunction: ApiFn<ResponseType> | ApiFn<ResponseType, ArgTypes>,
   ...parameters: ArgTypes
 ) {
-  const firstRender = useRef(true);
+  // keep the data reader inside a mutable object ref
+  // always initialize with a lazy data reader, as it can be overwritten by the useMemo immediately
+  const dataReaderObj = useRef<DataOrModifiedFn<ResponseType> | LazyDataOrModifiedFn<ResponseType>>(() => undefined);
 
-  // initialize the data reader
-  const [dataReader, updateDataReader] = useState(() => {
-    // lazy initialization, when no parameters are passed
-    if (!parameters.length) {
-      // we return an empty data reader function
-      return (() => undefined) as LazyDataOrModifiedFn<ResponseType>;
-    }
-
-    // eager initialization for api functions that don't accept arguments
-    if (
-      // check that the api function doesn't take any arguments
-      !apiFunction.length &&
-      // but the user passed an empty array as the only parameter
-      parameters.length === 1 &&
-      Array.isArray(parameters[0]) &&
-      parameters[0].length === 0
-    ) {
-      return initializeDataReader(apiFunction as ApiFn<ResponseType>);
-    }
-
-    // eager initialization for all other cases
-    return initializeDataReader(
-      apiFunction as ApiFn<ResponseType, ArgTypes>,
-      ...parameters,
-    );
-  });
-
-  // the updater function
-  const updater = useCallback(
-    (...newParameters: ArgTypes) => {
-      updateDataReader(() =>
-        initializeDataReader(
+  // like useEffect, but runs immediately
+  useMemo(() => {
+    if (parameters.length) {
+      // eager initialization for api functions that don't accept arguments
+      if (
+        // check that the api function doesn't take any arguments
+        !apiFunction.length &&
+        // but the user passed an empty array as the only parameter
+        parameters.length === 1 &&
+        Array.isArray(parameters[0]) &&
+        parameters[0].length === 0
+      ) {
+        dataReaderObj.current = initializeDataReader(apiFunction as ApiFn<ResponseType>);
+      } else {
+        // eager initialization for all other cases
+        dataReaderObj.current = initializeDataReader(
           apiFunction as ApiFn<ResponseType, ArgTypes>,
-          ...newParameters,
-        ),
-      );
-    },
-    [apiFunction],
-  );
-
-  // automatically call the updater function every time the params of the hook change
-  useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-    } else if (apiFunction.length > 0) {
-      updater(...parameters);
+          ...parameters,
+        );
+      }
     }
-  }, [...parameters]);
+  }, [apiFunction, ...parameters]);
 
-  return [dataReader, updater];
+  // state to force re-render
+  const [, forceRender] = useState(0);
+
+  const updaterFn = useCallback((...newParameters: ArgTypes) => {
+    // update the object ref
+    dataReaderObj.current = initializeDataReader(apiFunction as ApiFn<ResponseType, ArgTypes>, ...newParameters);
+    // update state to force a re-render
+    forceRender(ct => 1 - ct);
+  }, [apiFunction]);
+
+  return [dataReaderObj.current, updaterFn];
 }
