@@ -9,10 +9,12 @@ import { suspendFor } from './test.helpers';
 describe('useAsyncResource', () => {
   const apiFn = (id: number) => Promise.resolve({ id, name: 'test name' });
   const apiSimpleFn = () => Promise.resolve({ message: 'success' });
+  const apiFailingFn = () => Promise.reject({ message: 'error' });
 
   afterEach(() => {
     resourceCache(apiFn).clear();
     resourceCache(apiSimpleFn).clear();
+    resourceCache(apiFailingFn).clear();
   });
 
   it('should create a new data reader', async () => {
@@ -31,6 +33,16 @@ describe('useAsyncResource', () => {
     const [simpleData] = simpleResult.current;
     await suspendFor(simpleData);
     expect(simpleData()).toStrictEqual({ message: 'success' });
+  });
+
+  it('should throw an error', async () => {
+    const { result } = renderHook(() => useAsyncResource(apiFailingFn, []));
+    const [dataReader] = result.current;
+
+    // wait for it to fulfill
+    await suspendFor(dataReader);
+
+    expect(dataReader).toThrowError(Error('error'));
   });
 
   it('should trigger an update for the data reader', async () => {
