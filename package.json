@@ -29,7 +29,7 @@
   },
   "bugs": "https://github.com/andreiduca/use-async-resource/issues",
   "main": "./lib/index.js",
-  "types": "./src/index.ts",
+  "types": "./lib/index.d.ts",
   "scripts": {
     "build": "rm -rf ./lib && tsc",
     "test": "jest --verbose --coverage"
