@@ -9,6 +9,7 @@
 # misc
 .idea
 .vscode
+.github
 
 npm-debug.log*
 yarn-debug.log*
