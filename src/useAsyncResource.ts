@@ -18,7 +18,7 @@ import { initializeDataReader } from './dataReaderInitializer';
  *
  * @param apiFunction A typical api function.
  */
-export function useAsyncResource<ResponseType, ArgTypes extends any[]>(
+export function useAsyncResource<ResponseType, ArgTypes extends unknown[]>(
   apiFunction: ApiFn<ResponseType, ArgTypes>,
 ): [LazyDataOrModifiedFn<ResponseType>, UpdaterFn<ArgTypes>];
 
@@ -49,13 +49,13 @@ export function useAsyncResource<ResponseType>(
  * @param apiFunction A typical api function with an arbitrary number of parameters.
  * @param parameters If present, the api function will get executed immediately with these parameters.
  */
-export function useAsyncResource<ResponseType, ArgTypes extends any[]>(
+export function useAsyncResource<ResponseType, ArgTypes extends unknown[]>(
   apiFunction: ApiFn<ResponseType, ArgTypes>,
   ...parameters: ArgTypes
 ): [DataOrModifiedFn<ResponseType>, UpdaterFn<ArgTypes>];
 
 // implementation that covers the above overloads
-export function useAsyncResource<ResponseType, ArgTypes extends any[]>(
+export function useAsyncResource<ResponseType, ArgTypes extends unknown[]>(
   apiFunction: ApiFn<ResponseType> | ApiFn<ResponseType, ArgTypes>,
   ...parameters: ArgTypes
 ) {

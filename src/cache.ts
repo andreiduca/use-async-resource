@@ -9,7 +9,7 @@ const caches = new Map();
 
 // A simple resource cache helper.
 // Caches are kept individually for each api function.
-export function resourceCache<R, A extends any[]>(apiFn: ApiFn<R, A>) {
+export function resourceCache<R, A extends unknown[]>(apiFn: ApiFn<R, A>) {
   // initialize a new cache for this api function if it doesn't exist
   if (!caches.has(apiFn)) {
     caches.set(apiFn, new Map());

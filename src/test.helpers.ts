@@ -1,5 +1,5 @@
 // mimics how Suspense treats thrown promises
-export async function suspendFor<T extends () => any>(throwablePromise: T) {
+export async function suspendFor<T extends () => unknown>(throwablePromise: T) {
   // initially, the data reader throws the new promise
   expect(throwablePromise).toThrow();
 

@@ -2,13 +2,13 @@
  * A typical api function: takes an arbitrary number of arguments of type A
  * and returns a Promise which resolves with a specific response type of R.
  */
-export type ApiFn<R, A extends any[] = []> = (...args: A) => Promise<R>;
+export type ApiFn<R, A extends unknown[] = []> = (...args: A) => Promise<R>;
 
 /**
  * An updater function: has a similar signature with the original api function,
  * but doesn't return anything because it only triggers new api calls.
  */
-export type UpdaterFn<A extends any[] = []> = (...args: A) => void;
+export type UpdaterFn<A extends unknown[] = []> = (...args: A) => void;
 
 /**
  * A simple data reader function: returns the response type R.
@@ -22,7 +22,7 @@ type LazyDataFn<R> = () => R | undefined;
 /**
  * A modifier function which takes as only argument the response type R and returns a different type M.
  */
-export type ModifierFn<R, M = any> = (response: R) => M;
+export type ModifierFn<R, M = unknown> = (response: R) => M;
 
 /**
  * A data reader with a modifier function,

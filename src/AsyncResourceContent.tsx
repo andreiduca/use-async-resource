@@ -1,14 +1,14 @@
-import React, { ReactNode } from 'react';
+import * as React from 'react';
 import AsyncResourceErrorBoundary, { Props as ErrorBoundaryProps } from './AsyncResourceErrorBoundary';
 
 interface AsyncResourceContentProps {
-  fallback: NonNullable<ReactNode> | null;
-  errorComponent?: React.ComponentType<any>;
+  fallback: NonNullable<React.ReactNode> | null;
+  errorComponent?: React.ComponentType<unknown>;
 }
 
 type Props<T> = AsyncResourceContentProps & ErrorBoundaryProps<T>;
 
-const AsyncResourceContent = <T extends any = Error>({
+const AsyncResourceContent = <T extends unknown = Error>({
   children,
   fallback,
   errorMessage,

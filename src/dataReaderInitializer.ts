@@ -20,13 +20,13 @@ export function initializeDataReader<ResponseType>(
  * @param apiFn A typical api function with parameters.
  * @param parameters An arbitrary number of parameters.
  */
-export function initializeDataReader<ResponseType, ArgTypes extends any[]>(
+export function initializeDataReader<ResponseType, ArgTypes extends unknown[]>(
   apiFn: ApiFn<ResponseType, ArgTypes>,
   ...parameters: ArgTypes
 ): DataOrModifiedFn<ResponseType>;
 
 // implementation that covers the above overloads
-export function initializeDataReader<ResponseType, ArgTypes extends any[] = []>(
+export function initializeDataReader<ResponseType, ArgTypes extends unknown[] = []>(
   apiFn: ApiFn<ResponseType, ArgTypes>,
   ...parameters: ArgTypes
 ) {
@@ -41,14 +41,15 @@ export function initializeDataReader<ResponseType, ArgTypes extends any[] = []>(
 
   let data: ResponseType;
   let status: AsyncStatus = 'init';
-  let error: any;
+  let error: unknown;
 
   const fetchingPromise = apiFn(...parameters)
-    .then(result => {
+    .then((result) => {
       data = result;
       status = 'done';
+      return result;
     })
-    .catch(err => {
+    .catch((err) => {
       error = err;
       status = 'error';
     });

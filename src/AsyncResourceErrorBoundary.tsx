@@ -1,11 +1,11 @@
-import React from 'react';
+import * as React from 'react';
 
 interface State {
   error?: Error,
   errorMessage?: string;
 }
 
-export interface Props<E extends any = Error> {
+export interface Props<E extends unknown = Error> {
   errorMessage?: React.ReactComponentElement<any> | string | ((error: E) => string | React.ReactComponentElement<any>);
   // todo: flag to reset the error and errorMessage states and try to render the content again
   // retry?: boolean;

@@ -1,9 +1,9 @@
-import React from 'react';
+import * as React from 'react';
 interface State {
     error?: Error;
     errorMessage?: string;
 }
-export interface Props<E extends any = Error> {
+export interface Props<E extends unknown = Error> {
     errorMessage?: React.ReactComponentElement<any> | string | ((error: E) => string | React.ReactComponentElement<any>);
 }
 declare class AsyncResourceErrorBoundary<CustomErrorType> extends React.Component<Props<CustomErrorType>, State> {
@@ -14,6 +14,6 @@ declare class AsyncResourceErrorBoundary<CustomErrorType> extends React.Componen
         errorMessage: string | React.ReactComponentElement<any, Pick<any, string | number | symbol>>;
     };
     constructor(props: Props<CustomErrorType>);
-    render(): {} | null | undefined;
+    render(): React.ReactNode;
 }
 export default AsyncResourceErrorBoundary;
