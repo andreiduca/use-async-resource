@@ -35,7 +35,7 @@
     "test": "jest --verbose --coverage"
   },
   "dependencies": {
-    "object-hash": "^2.0.3"
+    "object-hash": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
