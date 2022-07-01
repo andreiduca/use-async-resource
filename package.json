@@ -43,11 +43,11 @@
     "@babel/preset-typescript": "^7.9.0",
     "@testing-library/dom": "8",
     "@testing-library/react-hooks": "^7.0.1",
-    "@types/jest": "27",
+    "@types/jest": "28",
     "@types/react": "16 || 17",
     "@types/react-dom": "16 || 17",
     "babel-jest": "27",
-    "jest": "27",
+    "jest": "28",
     "react": "16 || 17 || 18",
     "react-test-renderer": "16 || 17",
     "typescript": "4"
